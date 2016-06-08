@@ -29,21 +29,132 @@
                 }
             ];
             
+            var settlement = [
+                {
+                    "id" : "hut",
+                    "label" : "Hut",
+                    "description" : "Not the best accommodation, but enough for ogres",
+                    "price" : "500",
+                    "priceRatio" : 1.5,
+                    "value" : 0,
+                    "shown" : true,
+                    "requires" : "totalXp > 0;"
+                },
+                {
+                    "id" : "badger",
+                    "label" : "Badger on the stick",
+                    "description" : "Excelent training tool for fighting villagers",
+                    "price" : "500",
+                    "priceRatio" : 1.5,
+                    "value" : 0,
+                    "shown" : false,
+                    "requires" : "totalXp > 10;"
+                },
+                {
+                    "id" : "farm",
+                    "label" : "Farm",
+                    "description" : "Get munchies for free",
+                    "price" : "500",
+                    "priceRatio" : 1.5,
+                    "value" : 0,
+                    "shown" : false,
+                    "requires" : "totalXp > 20;"
+                },
+                {
+                    "id" : "house",
+                    "label" : "House",
+                    "description" : "More orcs can live here",
+                    "price" : "500",
+                    "priceRatio" : 1.5,
+                    "value" : 0,
+                    "shown" : false,
+                    "requires" : "totalXp > 30;"
+                }
+
+            ];
+            
+            var tribe = {
+                "description" : "Your people - be sure to keep them happy",
+                "morale" : 1.0,
+                "enthusiasm" : 1.0,
+                "value" : 0
+            };
+            
+            var tribeWeapons = [
+                {
+                    "id" : "stick",
+                    "label" : "Stick",
+                    "description" : "It's sticky",
+                    "bonus" : "1.01",
+                    "obtained" : true,
+                    "requires" : "pillageLevel >= 0;"
+                },
+                {
+                    "id" : "knife",
+                    "label" : "Knife",
+                    "description" : "You know - that stabby thing",
+                    "bonus" : "1.05",
+                    "obtained" : false,
+                    "requires" : "pillageLevel >= 5"
+                },
+                {
+                    "id" : "spoon",
+                    "label" : "Spoon",
+                    "description" : "Have you played knifey-spoony before?",
+                    "bonus" : "1.25",
+                    "obtained" : false,
+                    "requires" : "pillageLevel >= 50"
+                }
+            ];
+            
+            var achievements = [
+                {
+                    "id" : "level2",
+                    "label" : "You've reached level 2",
+                    "description" : "Your are so good",
+                    "done" : false,
+                    "requires" : "level > 1;",
+                },
+                {
+                    "id" : "tribe5",
+                    "label" : "5 ogres in your tribe",
+                    "description" : "Your tribe is raising",
+                    "done" : false,
+                    "requires" : "tribe.value > 4;",
+                }
+            ];
+            
+            
             var totalXp = 0;
             var totalMunchies = 0;
             var totalPoints = 2;
             var level = 1;
             
+            var pillageLevel = 0;
+            
             $(document).ready(function() {
                 for (var i = 0; i < stats.length; i++) {
                     $("#stats").append('<tr><td title="' + stats[i].description + '">' + stats[i].label + '</td><td id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');">+ 1</a></td></tr>')  
                 }
-                                
+                
+                showSettlement();
+                
+                for (var i = 0; i < achievements.length; i++) {
+                    $("#achievements").append('<tr><td title="' + achievements[i].description + '">' + achievements[i].label + '</td><td id="' + achievements[i].id + 'value">' + achievements[i].done + '</td></tr>')  
+                }
+                
                 $("#munchies").text(totalMunchies);
                 $("#quest").text(quests[getRandomInt(0, quests.length - 1)])
 
                 $("#level").text(level);
                 $("#next_level").text(totalXp + "/" +  5 * Math.pow(level, 2));
+                
+                $("#tribe").text(tribe.value);
+                $("#morale").text(tribe.morale);
+                $("#pillage").text(pillageLevel);
+                
+                showWeapons();
+                
                 setInterval(timer, 2000);
             });
             
@@ -61,6 +172,38 @@
                         }
                     }        
                 }
+            };
+            
+            function showSettlement() {
+                $("#settlement").empty();
+                for (var i = 0; i < settlement.length; i++) {
+                    if(settlement[i].shown) {
+                        $("#settlement").append('<tr><td title="' + settlement[i].description + '">' + settlement[i].label + '</td><td id="' + settlement[i].id + 'value">' + settlement[i].value + '</td><td><a href="javascript:void(0);" onclick="addSettlement(\'' + settlement[i].id + '\');">+ 1</a></td></tr>')
+                    }
+                }
+            };
+            
+            function showWeapons() {
+                $("#weapons").empty();
+                for (var i = 0; i < tribeWeapons.length; i++) {
+                    if(tribeWeapons[i].obtained) {
+                        $("#weapons").append('<tr><td title="' + tribeWeapons[i].description + '">' + tribeWeapons[i].label + '</td><td id="' + tribeWeapons[i].id + 'value">' + tribeWeapons[i].bonus + '</td></tr>')  
+                    }
+                } 
+            };
+            
+            function addSettlement(settlementId) {
+                for (var i = 0; i < settlement.length; i++) {
+                    if(settlement[i].id == settlementId) {
+                        var totalPrice = settlement[i].price * Math.pow(settlement[i].priceRatio, settlement[i].value);
+                        if(totalPrice <= totalMunchies) {
+                            totalMunchies -= totalPrice;
+                            settlement[i].value++;
+                            $("#" + settlementId + "value").text(settlement[i].value);
+                            $("#munchies").text(totalMunchies);
+                        }
+                    }
+                }                
             };
             
             function quest() {
@@ -86,10 +229,49 @@
                 $("#next_level").text(totalXp + "/" +  5 * Math.pow(level, 2));              
             };
             
+            function checkAchievements() {
+                for (var i = 0; i < achievements.length; i++) {
+                    if(!achievements[i].done) {
+                        if(eval(achievements[i].requires)) {
+                            achievements[i].done = true;
+                            $("#" + achievements[i].id + "value").text(achievements[i].done);
+                            
+                        }
+                    }
+                }
+            };
+            
+            function checkSettlement() {
+                for (var i = 0; i < settlement.length; i++) {
+                    if(!settlement[i].shown) {
+                        if(eval(settlement[i].requires)) {
+                            settlement[i].shown = true;
+                            showSettlement();
+                        }
+                    }
+                }
+            };
+            
+            function checkWeapons() {
+                for (var i = 0; i < tribeWeapons.length; i++) {
+                    if(!tribeWeapons[i].obtained) {
+                        if(eval(tribeWeapons[i].requires)) {
+                            tribeWeapons[i].obtained = true;
+                            showWeapons();
+                        }
+                    }
+                }
+            };
+            
+            
             function timer() {
                 addXp(1);
+                checkAchievements();
+                checkWeapons();
+                checkSettlement();
             };
         </script>
+        
         <table>
             <tr>
                 <td>Level <span id="level"></span></td>
@@ -105,5 +287,36 @@
         
         <br />
         <button id="quest" onclick="quest()"></button>
+        <br />
+        
+        
+        <br />
+        Settlement:
+        <table id="settlement"></table>
+        
+        <br />
+        Achievements:
+        <table id="achievements"></table>
+        
+        <br />
+        Tribe:
+        <table>
+            <tr>
+                <td id="tribe"></td>
+            </tr>
+            <tr>
+                <td><table id="weapons"></table></td>
+            </tr>
+            <tr>
+                <td>Morale</td>
+                <td id="morale"></td>
+            </tr>
+            <tr>
+                <td>Pillage</td>
+                <td id="pillage"></td>
+            </tr>
+        </table>
+        
+        
     </body>
 </html>
