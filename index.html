@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <title>Ogre idle</title>
+    </head>
+    <body>
+        <script>
+            
+            var quests = ["Eat a baby", "Rob an old lady", "Scratch arse", "Look under the couch", "Sit on a stump", "Frighten a villager", "Dance around naked", "Try to catch a squirell", "Find some munchies", "Play hide and seek", "Sing a song", "Make a bear drink a beer", "Eat a wolf", "Pick magic mashrooms", "Get drunk", "Run away", "Buy cookies"];
+            
+            var stats = [
+                {
+                    "id" : "str",
+                    "label" : "Strength",
+                    "description" : "Useful for getting munchies",
+                    "value" : 0
+                },
+                {
+                    "id" : "int",
+                    "label" : "Inteligence",
+                    "description" : "Meh.",
+                    "value" : 0
+                },
+                {
+                    "id" : "char",
+                    "label" : "Charisma",
+                    "description" : "Persuade others to join you",
+                    "value" : 0
+                }
+            ];
+            
+            var totalXp = 0;
+            var totalMunchies = 0;
+            var totalPoints = 2;
+            var level = 1;
+            
+            $(document).ready(function() {
+                for (var i = 0; i < stats.length; i++) {
+                    $("#stats").append('<tr><td title="' + stats[i].description + '">' + stats[i].label + '</td><td id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');">+ 1</a></td></tr>')  
+                }
+                                
+                $("#munchies").text(totalMunchies);
+                $("#quest").text(quests[getRandomInt(0, quests.length - 1)])
+
+                $("#level").text(level);
+                $("#next_level").text(totalXp + "/" +  5 * Math.pow(level, 2));
+                setInterval(timer, 2000);
+            });
+            
+            function getRandomInt(from, to) { 
+                return Math.floor(Math.random() * (to - from + 1)) + from;
+            };
+            
+            function addStat(statId) {
+                if (totalPoints > 0) {
+                    for (var i = 0; i < stats.length; i++) {
+                        if(stats[i].id == statId) {
+                            totalPoints--;
+                            stats[i].value++;
+                            $("#" + statId + "value").text(stats[i].value);
+                        }
+                    }        
+                }
+            };
+            
+            function quest() {
+                addMunchies(getRandomInt(0, 50));
+                addXp(getRandomInt(0, 2));
+                $("#quest").text(quests[getRandomInt(0, quests.length - 1)])                
+            };
+           
+            function addMunchies(munchies) {
+                totalMunchies += munchies;
+                $("#munchies").text(totalMunchies);              
+            };
+            
+            function addXp(xp) {
+                totalXp += xp;
+                if(totalXp >= 5 * Math.pow(level, 2)) {
+                    totalXp -= 5 * Math.pow(level, 2);
+                    level++;
+                    totalPoints += 2;
+                    $("#level").text(level);
+                }
+                
+                $("#next_level").text(totalXp + "/" +  5 * Math.pow(level, 2));              
+            };
+            
+            function timer() {
+                addXp(1);
+            };
+        </script>
+        <table>
+            <tr>
+                <td>Level <span id="level"></span></td>
+                <td id="next_level"></td>
+            </tr>
+            <tr>
+                <td>Munchies</td>
+                <td id="munchies"></td>
+            </tr>
+        </table>
+        <br />
+        <table id="stats"></table>
+        
+        <br />
+        <button id="quest" onclick="quest()"></button>
+    </body>
+</html>
