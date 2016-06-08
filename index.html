@@ -130,7 +130,7 @@
             var totalPoints = 2;
             var level = 1;
             
-            var pillageLevel = 0;
+            var pillageLevel = 3;
             
             $(document).ready(function() {
                 for (var i = 0; i < stats.length; i++) {
@@ -151,9 +151,9 @@
                 
                 $("#tribe").text(tribe.value);
                 $("#morale").text(tribe.morale);
-                $("#pillage").text(pillageLevel);
                 
                 showWeapons();
+                trackPillage();
                 
                 setInterval(timer, 2000);
             });
@@ -204,6 +204,22 @@
                         }
                     }
                 }                
+            };
+            
+            function addOgre() {
+               for (var i = 0; i < stats.length; i++) {
+                    if(stats[i].id == "char") {
+                        if(stats[i].value > tribe.value * 5) {
+                            if(totalMunchies >= 100) {
+                                totalMunchies -= 100;
+                                tribe.value++;
+                                $("#munchies").text(totalMunchies);
+                                $("#tribe").text(tribe.value);
+                                
+                            }
+                        }
+                    }
+                }        
             };
             
             function quest() {
@@ -263,12 +279,25 @@
                 }
             };
             
+            function trackPillage() {
+                $("#pillage").empty();
+                for (var i = 0; i < 10; i++) {
+                    if(i < pillageLevel) {
+                        $("#pillage").append("<td> :( </td>");
+                    } else {
+                        $("#pillage").append("<td> :) </td>");
+                    }
+                }
+                
+            }
+            
             
             function timer() {
                 addXp(1);
                 checkAchievements();
                 checkWeapons();
                 checkSettlement();
+                trackPillage();
             };
         </script>
         
@@ -302,7 +331,7 @@
         Tribe:
         <table>
             <tr>
-                <td id="tribe"></td>
+                <td id="tribe"></td><td><a href="javascript:void(0);" onclick="addOgre()">+ 1</a></td>
             </tr>
             <tr>
                 <td><table id="weapons"></table></td>
@@ -313,9 +342,14 @@
             </tr>
             <tr>
                 <td>Pillage</td>
-                <td id="pillage"></td>
+                <table>
+                    <tr id="pillage"></tr>
+                </table>
             </tr>
+            
         </table>
+        
+        
         
         
     </body>
