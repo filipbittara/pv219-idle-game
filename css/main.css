@@ -1,0 +1,44 @@
+    body {
+        padding-top: 50px;
+        /* Required padding for .navbar-fixed-top. */
+    }
+    .btn-outline {
+        color: #447244;
+        background-color: transparent;
+        border-color: #447244;
+    }
+    .triangle-border {
+        position: relative;
+        padding: 15px;
+        margin: 1em 0 3em;
+        border: 2px solid #000000;
+        color: #333;
+        background: #fff;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+    }
+
+    .triangle-border:before {
+        content: "";
+        position: absolute;
+        bottom: -20px;
+        left: 40px;
+        border-width: 20px 20px 0;
+        border-style: solid;
+        border-color: #000000 transparent;
+        display: block;
+        width: 0;
+    }
+
+    .triangle-border:after {
+        content: "";
+        position: absolute;
+        bottom: -17px;
+        left: 43px;
+        border-width: 17px 17px 0;
+        border-style: solid;
+        border-color: #fff transparent;
+        display: block;
+        width: 0;
+    }
