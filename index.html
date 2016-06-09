@@ -168,6 +168,9 @@
                 trackPillage();
                 
                 setInterval(timer, 2000);
+                
+                hideAll();
+                $("#settlementDiv").show();
             });
             
             function getRandomInt(from, to) { 
@@ -382,6 +385,23 @@
                 trackPillage();
                 pillage();
             };
+            
+            function menu(bar) {
+                hideAll();
+                if(bar == "settlement") {
+                    $("#settlementDiv").show();
+                } else if(bar == "achievements") {       
+                    $("#achievementsDiv").show();
+                } else if(bar == "tribe") {
+                    $("#tribeDiv").show();
+                }
+            };
+            
+            function hideAll() {
+                $("#settlementDiv").hide();
+                $("#achievementsDiv").hide();
+                $("#tribeDiv").hide();
+            };
         </script>
         
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -398,13 +418,13 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="#">Settlement</a>
+                            <a href="#" onclick='menu("settlement")'>Settlement</a>
                         </li>
                         <li>
-                            <a href="#">Achievements</a>
+                            <a href="#" onclick='menu("achievements")'>Achievements</a>
                         </li>
                         <li>
-                            <a href="#">Tribe</a>
+                            <a href="#" onclick='menu("tribe")'>Tribe</a>
                         </li>
                     </ul>
                 </div>
@@ -439,38 +459,43 @@
                 
                 <div class="col-lg-6">
                     
+                    <div id="settlementDiv">
+                        <br />
+                        <h1>Settlement:</h1>
+                        <table id="settlement"></table>
+                    </div>
+                    
+                    <div id="achievementsDiv">
+                        <br />
+                        <h1>Achievements:</h1>
+                        <table id="achievements"></table>
+                    </div>
+                    
+                    <div id="tribeDiv">
+                        <br />
+                        <h1>Tribe:</h1>
+                        <table>
+                            <tr>
+                                <td>In your tribe, there's you and some others, it's <span id="tribe"></span> right now.</td>
+                            </tr>
+                            <tr>
+                                <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe</a></td>
+                            </tr>
+                            <tr>
+                                <td><table id="weapons"></table></td>
+                            </tr>
+                            <tr>
+                                <td>Pillage</td>
+                                <table>
+                                    <tr id="pillage"></tr>
+                                </table>
+                            </tr>
 
-                    <br />
-                    Settlement:
-                    <table id="settlement"></table>
-
-                    <br />
-                    Achievements:
-                    <table id="achievements"></table>
-
-                    <br />
-                    Tribe:
-                    <table>
-                        <tr>
-                            <td>In your tribe, there's you and some others, it's <span id="tribe"></span> right now.</td>
-                        </tr>
-                        <tr>
-                            <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe</a></td>
-                        </tr>
-                        <tr>
-                            <td><table id="weapons"></table></td>
-                        </tr>
-                        <tr>
-                            <td>Pillage</td>
-                            <table>
-                                <tr id="pillage"></tr>
-                            </table>
-                        </tr>
-
-                    </table>
-                    <br />
-                    <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
-                    <br />
+                        </table>
+                        <br />
+                        <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
+                        <br />
+                    </div>
                     
                 </div>
                 
