@@ -162,6 +162,7 @@
                 
                 $("#tribe").text(tribe.value);
                 $("#morale").text(tribe.morale);
+                $("#points").text(totalPoints);
                 
                 showWeapons();
                 trackPillage();
@@ -180,6 +181,7 @@
                             totalPoints--;
                             stats[i].value++;
                             $("#" + statId + "value").text(stats[i].value);
+                            $("#points").text(totalPoints);
                         }
                     }        
                 }
@@ -265,10 +267,11 @@
             
             function addXp(xp) {
                 totalXp += xp;
-                if(totalXp >= 5 * Math.pow(level, 2)) {
+                while(totalXp >= 5 * Math.pow(level, 2)) {
                     totalXp -= 5 * Math.pow(level, 2);
                     level++;
                     totalPoints += 2;
+                    $("#points").text(totalPoints);
                     $("#level").text(level);
                 }
                 
@@ -423,7 +426,7 @@
                         </tr>
                     </table>
                     <br />
-                    <table id="stats"></table>
+                    <table id="stats"><tr><td>Points</td><td id="points"></td></tr></table>
                     
                     <div class="col-lg-12">
                         <img class="img-responsive" src="img/ogre.png" alt="Ogre">
