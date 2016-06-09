@@ -89,8 +89,6 @@
             
             var tribe = {
                 "description" : "Your people - be sure to keep them happy",
-                "morale" : 1.0,
-                "enthusiasm" : 1.0,
                 "value" : 0
             };
             
@@ -148,14 +146,12 @@
             
             $(document).ready(function() {
                 for (var i = 0; i < stats.length; i++) {
-                    $("#stats").append('<tr><td title="' + stats[i].description + '">' + stats[i].label + '</td><td id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');">+ 1</a></td></tr>')  
+                    $("#stats").append('<tr><td style="padding-right: 15px;" title="' + stats[i].description + '">' + stats[i].label + '</td><td style="padding-right: 5px;" id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');"> +1</a></td></tr>')  
                 }
                 
                 showSettlement();
+                showAchievements();
                 
-                for (var i = 0; i < achievements.length; i++) {
-                    $("#achievements").append('<tr><td title="' + achievements[i].description + '">' + achievements[i].label + '</td><td id="' + achievements[i].id + 'value">' + achievements[i].done + '</td></tr>')  
-                }
                 
                 $("#munchies").text(totalMunchies);
                 $("#quest").text(quests[getRandomInt(0, quests.length - 1)]);
@@ -189,11 +185,24 @@
                 }
             };
             
+            function showAchievements() {
+                $("#achievements").empty();
+                for (var i = 0; i < achievements.length; i++) {
+                    if(achievements[i].done) {
+                         $("#achievements").append('<div class="panel panel-success"><div class="panel-heading"><h3 class="panel-title">' + achievements[i].label + '</h3></div><div class="panel-body">' + achievements[i].description + '</div></div>');
+                    } else {
+                        $("#achievements").append('<div class="panel panel-warning"><div class="panel-heading"><h3 class="panel-title">' + achievements[i].label + '</h3></div><div class="panel-body">' + achievements[i].description + '</div></div>');
+                    }
+                    
+                }
+            };
+            
             function showSettlement() {
                 $("#settlement").empty();
                 for (var i = 0; i < settlement.length; i++) {
                     if(settlement[i].shown) {
-                        $("#settlement").append('<tr><td title="' + settlement[i].description + '">' + settlement[i].label + '</td><td id="' + settlement[i].id + 'value">' + settlement[i].value + '</td><td><a href="javascript:void(0);" onclick="addSettlement(\'' + settlement[i].id + '\');">+ 1</a></td></tr>')
+                        $("#settlement").append('<div class="panel panel-default"><div class="panel-heading"><h3 class="panel-title">' + settlement[i].label + '</h3></div><div class="panel-body">' + settlement[i].description + '<br /> You currently own <span id="' + settlement[i].id + 'value">' + settlement[i].value + '</span>.<br /><br /><button class="btn btn-small btn-outline" id="quest" onclick="addSettlement(\'' + settlement[i].id + '\');"> +1</button></div></div>');
+                        
                     }
                 }
             };
@@ -202,7 +211,7 @@
                 $("#weapons").empty();
                 for (var i = 0; i < tribeWeapons.length; i++) {
                     if(tribeWeapons[i].obtained) {
-                        $("#weapons").append('<tr><td title="' + tribeWeapons[i].description + '">' + tribeWeapons[i].label + '</td><td id="' + tribeWeapons[i].id + 'value">' + tribeWeapons[i].bonus + '</td></tr>')  
+                        $("#weapons").append('<div class="panel panel-default"><div class="panel-heading"><h3 class="panel-title">' + tribeWeapons[i].label + '</h3></div><div class="panel-body">' + tribeWeapons[i].description + '<br /> This weapon gives you <span id="' + tribeWeapons[i].id + 'value">' + Math.round((tribeWeapons[i].bonus - 1) * 100) + '</span>% attack bonus.</div></div>');
                     }
                 } 
             };
@@ -210,7 +219,7 @@
             function addSettlement(settlementId) {
                 for (var i = 0; i < settlement.length; i++) {
                     if(settlement[i].id == settlementId) {
-                        var totalPrice = settlement[i].price * Math.pow(settlement[i].priceRatio, settlement[i].value);
+                        var totalPrice = Math.round(settlement[i].price * Math.pow(settlement[i].priceRatio, settlement[i].value));
                         if(totalPrice <= totalMunchies) {
                             totalMunchies -= totalPrice;
                             settlement[i].value++;
@@ -238,7 +247,13 @@
             };
             
             function quest() {
-                addMunchies(getRandomInt(0, 50));
+                var munchiesModifier = 1;
+                for (var i = 0; i < stats.length; i++) {
+                    if(stats[i].id == "str") {
+                        munchiesModifier = stats[i].value;
+                    } 
+                }; 
+                addMunchies(getRandomInt(0, 50 * munchiesModifier));
                 addXp(getRandomInt(0, 2));
                 $("#quest").text(quests[getRandomInt(0, quests.length - 1)])                
             };
@@ -265,7 +280,7 @@
                     if(!achievements[i].done) {
                         if(eval(achievements[i].requires)) {
                             achievements[i].done = true;
-                            $("#" + achievements[i].id + "value").text(achievements[i].done);
+                            showAchievements();
                             
                         }
                     }
@@ -298,9 +313,9 @@
                 $("#pillage").empty();
                 for (var i = 0; i < 10; i++) {
                     if(i < pillageLevel % 10) {
-                        $("#pillage").append("<td> :( </td>");
+                        $("#pillage").append("<td> (x_x) </td>");
                     } else {
-                        $("#pillage").append("<td> :) </td>");
+                        $("#pillage").append("<td> (O_o) </td>");
                     }
                 }
                 
@@ -353,7 +368,11 @@
             }
             
             function timer() {
-                addXp(1);
+                for (var i = 0; i < stats.length; i++) {
+                    if(stats[i].id == "int") {
+                        addXp(stats[i].value);
+                    } 
+                };                
                 checkAchievements();
                 checkWeapons();
                 checkSettlement();
@@ -391,33 +410,32 @@
         
         <div class="container">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-4">
         
                     <table>
                         <tr>
-                            <td>Level <span id="level"></span></td>
-                            <td id="next_level"></td>
+                            <td style="padding-right: 5px;">Level <span id="level" style="font-size: 38px;"></span></td>
+                            <td style="vertical-align: bottom; padding-bottom: 5px;" id="next_level" ></td>
                         </tr>
                         <tr>
                             <td>Munchies</td>
-                            <td id="munchies"></td>
+                            <td style="padding-left: 5px;" id="munchies"></td>
                         </tr>
                     </table>
                     <br />
                     <table id="stats"></table>
-                </div>
-                <div class="col-xs-6 col-md-4">
                     
-                    <img class="img-responsive" src="img/ogre.png" alt="Ogre">
+                    <div class="col-lg-12">
+                        <img class="img-responsive" src="img/ogre.png" alt="Ogre">
+                        <br />
+                        <center>
+                            <button class="btn btn-lg col-lg-12 btn-outline" id="quest" onclick="quest()"></button>
+                        </center>
+                    </div>
                 </div>
-                <div class="col-lg-12">
-                    <br />
-                    <button class="btn btn-lg btn-outline" id="quest" onclick="quest()"></button>
-                    <br />
-
-                    <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
-                    <br />
-
+                
+                <div class="col-lg-6">
+                    
 
                     <br />
                     Settlement:
@@ -431,14 +449,13 @@
                     Tribe:
                     <table>
                         <tr>
-                            <td id="tribe"></td><td><a href="javascript:void(0);" onclick="addOgre()">+ 1</a></td>
+                            <td>In your tribe, there's you and some others, it's <span id="tribe"></span> right now.</td>
+                        </tr>
+                        <tr>
+                            <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe</a></td>
                         </tr>
                         <tr>
                             <td><table id="weapons"></table></td>
-                        </tr>
-                        <tr>
-                            <td>Morale</td>
-                            <td id="morale"></td>
                         </tr>
                         <tr>
                             <td>Pillage</td>
@@ -448,8 +465,12 @@
                         </tr>
 
                     </table>
+                    <br />
+                    <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
+                    <br />
                     
                 </div>
+                
             </div>
         </div>       
     </body>
