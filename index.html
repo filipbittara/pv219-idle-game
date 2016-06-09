@@ -1,9 +1,23 @@
 <html>
     <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <title>Ogre idle</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        
+        <style>
+            body {
+                padding-top: 70px;
+                /* Required padding for .navbar-fixed-top. */
+            }
+            .btn-outline {
+                color: #447244;
+                background-color: transparent;
+                border-color: #447244;
+            }
+        </style>
     </head>
     <body>
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap.min.js"></script>
         <script>
             
             var quests = ["Eat a baby", "Rob an old lady", "Scratch arse", "Look under the couch", "Sit on a stump", "Frighten a villager", "Dance around naked", "Try to catch a squirell", "Find some munchies", "Play hide and seek", "Sing a song", "Make a bear drink a beer", "Eat a wolf", "Pick magic mashrooms", "Get drunk", "Run away", "Buy cookies"];
@@ -130,7 +144,7 @@
             var totalPoints = 2;
             var level = 1;
             
-            var pillageLevel = 3;
+            var pillageLevel = 0;
             
             $(document).ready(function() {
                 for (var i = 0; i < stats.length; i++) {
@@ -348,59 +362,95 @@
             };
         </script>
         
-        <table>
-            <tr>
-                <td>Level <span id="level"></span></td>
-                <td id="next_level"></td>
-            </tr>
-            <tr>
-                <td>Munchies</td>
-                <td id="munchies"></td>
-            </tr>
-        </table>
-        <br />
-        <table id="stats"></table>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Ogre idle</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#">Settlement</a>
+                        </li>
+                        <li>
+                            <a href="#">Achievements</a>
+                        </li>
+                        <li>
+                            <a href="#">Tribe</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
         
-        <br />
-        <button id="quest" onclick="quest()"></button>
-        <br />
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
         
-        <button id="fight" onclick="toggleFight()"></button>
-        <br />
-        
-        
-        <br />
-        Settlement:
-        <table id="settlement"></table>
-        
-        <br />
-        Achievements:
-        <table id="achievements"></table>
-        
-        <br />
-        Tribe:
-        <table>
-            <tr>
-                <td id="tribe"></td><td><a href="javascript:void(0);" onclick="addOgre()">+ 1</a></td>
-            </tr>
-            <tr>
-                <td><table id="weapons"></table></td>
-            </tr>
-            <tr>
-                <td>Morale</td>
-                <td id="morale"></td>
-            </tr>
-            <tr>
-                <td>Pillage</td>
-                <table>
-                    <tr id="pillage"></tr>
-                </table>
-            </tr>
-            
-        </table>
-        
-        
-        
-        
+                    <table>
+                        <tr>
+                            <td>Level <span id="level"></span></td>
+                            <td id="next_level"></td>
+                        </tr>
+                        <tr>
+                            <td>Munchies</td>
+                            <td id="munchies"></td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table id="stats"></table>
+                </div>
+                <div class="col-xs-6 col-md-4">
+                    
+                    <img class="img-responsive" src="img/ogre.png" alt="Ogre">
+                </div>
+                <div class="col-lg-12">
+                    <br />
+                    <button class="btn btn-lg btn-outline" id="quest" onclick="quest()"></button>
+                    <br />
+
+                    <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
+                    <br />
+
+
+                    <br />
+                    Settlement:
+                    <table id="settlement"></table>
+
+                    <br />
+                    Achievements:
+                    <table id="achievements"></table>
+
+                    <br />
+                    Tribe:
+                    <table>
+                        <tr>
+                            <td id="tribe"></td><td><a href="javascript:void(0);" onclick="addOgre()">+ 1</a></td>
+                        </tr>
+                        <tr>
+                            <td><table id="weapons"></table></td>
+                        </tr>
+                        <tr>
+                            <td>Morale</td>
+                            <td id="morale"></td>
+                        </tr>
+                        <tr>
+                            <td>Pillage</td>
+                            <table>
+                                <tr id="pillage"></tr>
+                            </table>
+                        </tr>
+
+                    </table>
+                    
+                </div>
+            </div>
+        </div>       
     </body>
 </html>
