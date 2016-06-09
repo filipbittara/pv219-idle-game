@@ -62,19 +62,19 @@
                 {
                     "id" : "str",
                     "label" : "Strength",
-                    "description" : "Useful for getting munchies",
+                    "description" : "Useful for getting more munchies from quests.",
                     "value" : 0
                 },
                 {
                     "id" : "int",
                     "label" : "Inteligence",
-                    "description" : "Meh.",
+                    "description" : "Meh. Only adds experience every tick.",
                     "value" : 0
                 },
                 {
                     "id" : "char",
                     "label" : "Charisma",
-                    "description" : "Persuade others to join you",
+                    "description" : "Persuade others to join you, number of ogres cannot exceed charisma.",
                     "value" : 0
                 }
             ];
@@ -83,42 +83,42 @@
                 {
                     "id" : "hut",
                     "label" : "Hut",
-                    "description" : "Not the best accommodation, but enough for ogres",
+                    "description" : "Not the best accommodation, but enough for one ogre.",
                     "price" : "500",
                     "priceRatio" : 1.5,
                     "value" : 0,
                     "shown" : true,
-                    "requires" : "totalXp > 0;"
+                    "requires" : "level > 0;"
                 },
                 {
                     "id" : "badger",
                     "label" : "Badger on the stick",
-                    "description" : "Excelent training tool for fighting villagers",
+                    "description" : "Excelent training tool for fighting villagers, improves attack power.",
                     "price" : "500",
                     "priceRatio" : 1.5,
                     "value" : 0,
                     "shown" : false,
-                    "requires" : "totalXp > 10;"
+                    "requires" : "level > 5;"
                 },
                 {
                     "id" : "farm",
                     "label" : "Farm",
-                    "description" : "Get munchies for free",
+                    "description" : "Get munchies for free, 10 per farm per tick.",
                     "price" : "500",
                     "priceRatio" : 1.5,
                     "value" : 0,
                     "shown" : false,
-                    "requires" : "totalXp > 20;"
+                    "requires" : "level > 10;"
                 },
                 {
                     "id" : "house",
                     "label" : "House",
-                    "description" : "More orcs can live here",
+                    "description" : "More orcs can live here, three precisely.",
                     "price" : "500",
                     "priceRatio" : 1.5,
                     "value" : 0,
                     "shown" : false,
-                    "requires" : "totalXp > 30;"
+                    "requires" : "level > 30;"
                 }
 
             ];
@@ -132,7 +132,7 @@
                 {
                     "id" : "stick",
                     "label" : "Stick",
-                    "description" : "It's sticky",
+                    "description" : "It's sticky!",
                     "bonus" : "1.01",
                     "obtained" : true,
                     "requires" : "pillageLevel >= 0;"
@@ -140,7 +140,7 @@
                 {
                     "id" : "knife",
                     "label" : "Knife",
-                    "description" : "You know - that stabby thing",
+                    "description" : "You know - that stabby thing.",
                     "bonus" : "1.05",
                     "obtained" : false,
                     "requires" : "pillageLevel >= 5"
@@ -158,15 +158,50 @@
             var achievements = [
                 {
                     "id" : "level2",
-                    "label" : "You've reached level 2",
-                    "description" : "Your are so good",
+                    "label" : "Reach level 2",
+                    "description" : "You are so great.",
                     "done" : false,
                     "requires" : "level > 1;",
                 },
                 {
+                    "id" : "level5",
+                    "label" : "Reach level 5",
+                    "description" : "You are even better than I thought.",
+                    "done" : false,
+                    "requires" : "level > 4;",
+                },
+                {
+                    "id" : "level10",
+                    "label" : "Reach level 10",
+                    "description" : "You are superstar.",
+                    "done" : false,
+                    "requires" : "level > 9;",
+                },
+                {
+                    "id" : "level20",
+                    "label" : "Reach level 20",
+                    "description" : "You are even better than superstar.",
+                    "done" : false,
+                    "requires" : "level > 19;",
+                },
+                {
                     "id" : "tribe5",
                     "label" : "5 ogres in your tribe",
-                    "description" : "Your tribe is raising",
+                    "description" : "Your tribe is growing.",
+                    "done" : false,
+                    "requires" : "tribe.value > 4;",
+                },
+                {
+                    "id" : "tribe50",
+                    "label" : "50 ogres in your tribe",
+                    "description" : "Your tribe is expanding rapidly.",
+                    "done" : false,
+                    "requires" : "tribe.value > 4;",
+                },
+                {
+                    "id" : "tribe100",
+                    "label" : "100 ogres in your tribe",
+                    "description" : "Your tribe is infesting world.",
                     "done" : false,
                     "requires" : "tribe.value > 4;",
                 }
@@ -181,7 +216,10 @@
             var pillageLevel = 0;
             
             $(document).ready(function() {
-                load();
+                
+                if(jQuery.isNumeric(localStorage.getItem("level"))) {
+                    load();
+                }
                 for (var i = 0; i < stats.length; i++) {
                     $("#stats").append('<tr><td style="padding-right: 15px;" title="' + stats[i].description + '">' + stats[i].label + '</td><td style="padding-right: 5px;" id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');"> +1</a></td></tr>')  
                 }
@@ -344,23 +382,38 @@
             };
             
             function addOgre() {
-               for (var i = 0; i < stats.length; i++) {
-                    if(stats[i].id == "char") {
-                        if(stats[i].value > tribe.value) {
-                            if(totalMunchies >= 100) {
-                                totalMunchies -= 100;
-                                tribe.value++;
-                                $("#munchies").text(totalMunchies);
-                                $("#tribe").text(tribe.value);
-                                
-                            }  else {
-                            $("#hint").html("You don't have enough munchies to persuade another ogre. Earn some by doing quests or from farms.");
-                            }
-                        } else {
-                            $("#hint").html("You don't have enough charisma to lead bigger tribe. Put some points in charisma first.");
+                var houses = 0;
+                for (var i = 0; i < settlement.length; i++) {
+                    if(settlement[i].id == "hut") {
+                        if(settlement[i].value > 0) {
+                            houses += settlement[i].value;
+                        }
+                    } else if(settlement[i].id == "house") {
+                        if(settlement[i].value > 0) {
+                            houses += settlement[i].value * 3;
                         }
                     }
-                }        
+                };
+                if(houses > tribe.value) {
+                    for (var i = 0; i < stats.length; i++) {
+                        if(stats[i].id == "char") {
+                            if(stats[i].value > tribe.value) {
+                                if(totalMunchies >= 100) {
+                                    totalMunchies -= 100;
+                                    tribe.value++;
+                                    $("#munchies").text(totalMunchies);
+                                    $("#tribe").text(tribe.value);
+                                }  else {
+                                $("#hint").html("You don't have enough munchies to persuade another ogre. Earn some by doing quests or from farms.");
+                                }
+                            } else {
+                                $("#hint").html("You don't have enough charisma to lead bigger tribe. Put some points in charisma first.");
+                            }
+                        }
+                    }  
+                } else {
+                    $("#hint").html("You don't have enough houses for your tribe. Buy some huts or houses first.");
+                }      
             };
             
             var firstQuest = true;
@@ -574,7 +627,7 @@
         
         <div class="container">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
         
                     <table>
                         <tr>
@@ -594,26 +647,25 @@
                         <img class="img-responsive" src="img/ogre.png" alt="Ogre">
                         <br />
                         <center>
-                            <button class="btn btn-lg col-lg-12 btn-outline" id="quest" onclick="quest()"></button>
+                            <button class="btn btn-lg col-lg-12 col-sm-12 btn-outline" id="quest" onclick="quest()"></button>
                         </center>
                     </div>
                 </div>
                 
-                <div class="col-lg-6">
-                    
-                    <div id="settlementDiv">
+                <div class="col-lg-6">                    
+                    <div id="settlementDiv" class="col-md-8 col-sm-6 col-xs-12">
                         <br />
                         <h1>Settlement:</h1>
                         <table id="settlement"></table>
                     </div>
                     
-                    <div id="achievementsDiv">
+                    <div id="achievementsDiv" class="col-xs-12">
                         <br />
                         <h1>Achievements:</h1>
                         <table id="achievements"></table>
                     </div>
                     
-                    <div id="tribeDiv">
+                    <div id="tribeDiv" class="col-xs-12">
                         <br />
                         <h1>Tribe:</h1>
                         <table>
@@ -624,7 +676,7 @@
                                 <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe.</a></td>
                             </tr>
                             <tr>
-                                <td>(This will cost you 100 munchies.)</td>
+                                <td>It will cost you 100 munchies, you must have place in houses an be charismatic enough.</td>
                             </tr>
                         </table>
                         <br />
@@ -645,6 +697,11 @@
                         <br />
                         <button class="btn btn-lg btn-outline" id="fight" onclick="toggleFight()"></button>
                         <br />
+                        <table>
+                            <tr>
+                                <td>Ogres will bring a lot of things, but they may die if defeated.</td>
+                            </tr>
+                        </table>
                     </div>
                     
                 </div>
