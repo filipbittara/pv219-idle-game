@@ -181,6 +181,7 @@
             var pillageLevel = 0;
             
             $(document).ready(function() {
+                load();
                 for (var i = 0; i < stats.length; i++) {
                     $("#stats").append('<tr><td style="padding-right: 15px;" title="' + stats[i].description + '">' + stats[i].label + '</td><td style="padding-right: 5px;" id="' + stats[i].id + 'value">' + stats[i].value + '</td><td><a href="javascript:void(0);" onclick="addStat(\'' + stats[i].id + '\');"> +1</a></td></tr>')  
                 }
@@ -207,7 +208,74 @@
                 
                 hideAll();
                 $("#settlementDiv").show();
+                
             });
+            
+            //debug
+            function clearLocalStorage() {
+                window.localStorage.clear();
+            }
+            
+            function save() {
+                localStorage.setItem("level", level);
+                localStorage.setItem("totalXp", totalXp);
+                localStorage.setItem("totalMunchies", totalMunchies);
+                localStorage.setItem("totalPoints", totalPoints);
+                
+                for (var i = 0; i < stats.length; i++) {
+                    localStorage.setItem(stats[i].id, stats[i].value);
+                }
+                
+                for (var i = 0; i < settlement.length; i++) {
+                    localStorage.setItem(settlement[i].id, settlement[i].value);
+                    localStorage.setItem(settlement[i].id + "shown", settlement[i].shown);
+                }
+                
+                for (var i = 0; i < achievements.length; i++) {
+                    localStorage.setItem(achievements[i].id, achievements[i].value);
+                    localStorage.setItem(achievements[i].id + "done", achievements[i].done);
+                }
+                
+                for (var i = 0; i < tribeWeapons.length; i++) {
+                    localStorage.setItem(tribeWeapons[i].id, tribeWeapons[i].obtained) 
+                }
+                
+                localStorage.setItem("tribe", tribe.value);
+                localStorage.setItem("pillage", pillageLevel);
+                localStorage.setItem("firstQuest", firstQuest);
+                localStorage.setItem("fighting", fighting);
+            };
+            
+            function load() {
+                level = parseInt(localStorage.getItem("level"));
+                totalXp = parseInt(localStorage.getItem("totalXp"));
+                totalMunchies = parseInt(localStorage.getItem("totalMunchies"));
+                totalPoints = parseInt(localStorage.getItem("totalPoints"));
+                
+                for (var i = 0; i < stats.length; i++) {
+                    stats[i].value = parseInt(localStorage.getItem(stats[i].id));
+                }
+                
+                for (var i = 0; i < settlement.length; i++) {
+                    settlement[i].value = parseInt(localStorage.getItem(settlement[i].id));
+                    settlement[i].shown = JSON.parse(localStorage.getItem(settlement[i].id + "shown"));
+                }
+                
+                for (var i = 0; i < achievements.length; i++) {
+                    achievements[i].value = parseInt(localStorage.getItem(achievements[i].id));
+                    achievements[i].done = JSON.parse(localStorage.getItem(achievements[i].id + "done"));
+                }
+                
+                for (var i = 0; i < tribeWeapons.length; i++) {
+                    tribeWeapons[i].obtained = JSON.parse(localStorage.getItem(tribeWeapons[i].id)); 
+                }
+                
+                tribe.value = parseInt(localStorage.getItem("tribe"));
+                pillageLevel = parseInt(localStorage.getItem("pillage"));
+                firstQuest = JSON.parse(localStorage.getItem("firstQuest"));
+                fighting = JSON.parse(localStorage.getItem("fighting"));
+            };
+            
             
             function getRandomInt(from, to) { 
                 return Math.floor(Math.random() * (to - from + 1)) + from;
@@ -225,7 +293,7 @@
                     }        
                 } else {
                      $("#hint").html("You don't have enough free points. You gain 2 points per each level.");
-                }
+                }   
             };
             
             function showAchievements() {
@@ -445,6 +513,18 @@
                 checkSettlement();
                 trackPillage();
                 pillage();
+                farms();
+                save();
+            };
+            
+            function farms() {
+                for (var i = 0; i < settlement.length; i++) {
+                    if(settlement[i].id == "farm") {
+                        if(settlement[i].value > 0) {
+                            addMunchies(settlement[i].value * 10);
+                        }
+                    }
+                };
             };
             
             function menu(bar) {
