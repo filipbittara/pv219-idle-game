@@ -144,7 +144,8 @@
                 }
                 
                 $("#munchies").text(totalMunchies);
-                $("#quest").text(quests[getRandomInt(0, quests.length - 1)])
+                $("#quest").text(quests[getRandomInt(0, quests.length - 1)]);
+                $("#fight").text("Start the fight");
 
                 $("#level").text(level);
                 $("#next_level").text(totalXp + "/" +  5 * Math.pow(level, 2));
@@ -209,7 +210,7 @@
             function addOgre() {
                for (var i = 0; i < stats.length; i++) {
                     if(stats[i].id == "char") {
-                        if(stats[i].value > tribe.value * 5) {
+                        if(stats[i].value > tribe.value) {
                             if(totalMunchies >= 100) {
                                 totalMunchies -= 100;
                                 tribe.value++;
@@ -282,15 +283,60 @@
             function trackPillage() {
                 $("#pillage").empty();
                 for (var i = 0; i < 10; i++) {
-                    if(i < pillageLevel) {
+                    if(i < pillageLevel % 10) {
                         $("#pillage").append("<td> :( </td>");
                     } else {
                         $("#pillage").append("<td> :) </td>");
                     }
                 }
                 
-            }
+            };
+
+            var fighting = false;
             
+            var defenderPower = null;
+            
+            function pillage() {
+                if(fighting) {
+                    if(defenderPower == null) {
+                        defenderPower = getRandomInt(pillageLevel * 5, (pillageLevel + 10) * 5);
+                    }
+                    var weaponBonus = 1;
+                    for (var i = 0; i < tribeWeapons.length; i++) {
+                        if(tribeWeapons[i].obtained) {
+                            weaponBonus *= tribeWeapons[i].bonus;
+                        }
+                    }
+                    for (var i = 0; i < settlement.length; i++) {
+                        if(settlement[i].id == "badger") {
+                            if(settlement[i].value > 0) {
+                                weaponBonus *= Math.pow(1.05, settlement[i].value);
+                            }
+                        }
+                    };
+                    if(defenderPower < 10 * tribe.value * weaponBonus) {
+                        pillageLevel++;
+                        trackPillage();
+                        defenderPower = null;
+                        addMunchies(getRandomInt(0, 50 * pillageLevel));
+                        addXp(getRandomInt(0, 2 * pillageLevel));
+                    } else {
+                        tribe.value -= getRandomInt(0, tribe.value);
+                        $("#tribe").text(tribe.value);
+                        toggleFight();
+                    }
+                }
+                
+            };
+            
+            function toggleFight() {
+                fighting = !fighting;
+                if(fighting) {
+                    $("#fight").text("Stop the fight");
+                } else {
+                    $("#fight").text("Start the fight");
+                }
+            }
             
             function timer() {
                 addXp(1);
@@ -298,6 +344,7 @@
                 checkWeapons();
                 checkSettlement();
                 trackPillage();
+                pillage();
             };
         </script>
         
@@ -316,6 +363,9 @@
         
         <br />
         <button id="quest" onclick="quest()"></button>
+        <br />
+        
+        <button id="fight" onclick="toggleFight()"></button>
         <br />
         
         
