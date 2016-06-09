@@ -5,7 +5,7 @@
         
         <style>
             body {
-                padding-top: 70px;
+                padding-top: 50px;
                 /* Required padding for .navbar-fixed-top. */
             }
             .btn-outline {
@@ -13,6 +13,42 @@
                 background-color: transparent;
                 border-color: #447244;
             }
+            .triangle-border {
+                position: relative;
+                padding: 15px;
+                margin: 1em 0 3em;
+                border: 2px solid #000000;
+                color: #333;
+                background: #fff;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+            }
+
+            .triangle-border:before {
+                content: "";
+                position: absolute;
+                bottom: -20px;
+                left: 40px;
+                border-width: 20px 20px 0;
+                border-style: solid;
+                border-color: #000000 transparent;
+                display: block;
+                width: 0;
+            }
+
+            .triangle-border:after {
+                content: "";
+                position: absolute;
+                bottom: -17px;
+                left: 43px;
+                border-width: 17px 17px 0;
+                border-style: solid;
+                border-color: #fff transparent;
+                display: block;
+                width: 0;
+            }
+            
         </style>
     </head>
     <body>
@@ -187,6 +223,8 @@
                             $("#points").text(totalPoints);
                         }
                     }        
+                } else {
+                     $("#hint").html("You don't have enough free points. You gain 2 points per each level.");
                 }
             };
             
@@ -230,6 +268,8 @@
                             settlement[i].value++;
                             showSettlement();
                             $("#munchies").text(totalMunchies);
+                        } else {
+                            $("#hint").html("You don't have enough enough munchies to buy that. Earn some first by doing quests or from farms.");
                         }
                     }
                 }                
@@ -245,11 +285,17 @@
                                 $("#munchies").text(totalMunchies);
                                 $("#tribe").text(tribe.value);
                                 
+                            }  else {
+                            $("#hint").html("You don't have enough munchies to persuade another ogre. Earn some by doing quests or from farms.");
                             }
+                        } else {
+                            $("#hint").html("You don't have enough charisma to lead bigger tribe. Put some points in charisma first.");
                         }
                     }
                 }        
             };
+            
+            var firstQuest = true;
             
             function quest() {
                 var munchiesModifier = 1;
@@ -262,7 +308,11 @@
                 }; 
                 addMunchies(getRandomInt(0, 50 * munchiesModifier));
                 addXp(getRandomInt(0, 2));
-                $("#quest").text(quests[getRandomInt(0, quests.length - 1)])                
+                $("#quest").text(quests[getRandomInt(0, quests.length - 1)])
+                if(firstQuest) {
+                    firstQuest = false;
+                    $("#hint").html("That's how you gain XP and food.<br /> Now just try to click on as many things as you can. I don't have time to explain you everything. But don't worry, if you do something wrong, I'll tell you.");
+                }
             };
            
             function addMunchies(munchies) {
@@ -289,7 +339,6 @@
                         if(eval(achievements[i].requires)) {
                             achievements[i].done = true;
                             showAchievements();
-                            
                         }
                     }
                 }
@@ -337,6 +386,7 @@
                 if(fighting) {
                     if(defenderPower == null) {
                         defenderPower = getRandomInt(pillageLevel * 5, (pillageLevel + 10) * 5);
+                        $("#defenders").text(defenderPower);
                     }
                     var weaponBonus = 1;
                     for (var i = 0; i < tribeWeapons.length; i++) {
@@ -351,27 +401,36 @@
                             }
                         }
                     };
+                    $("#attackers").text(10 * tribe.value * weaponBonus);
                     if(defenderPower < 10 * tribe.value * weaponBonus) {
                         pillageLevel++;
                         trackPillage();
                         defenderPower = null;
                         addMunchies(getRandomInt(0, 50 * pillageLevel));
                         addXp(getRandomInt(0, 2 * pillageLevel));
+                        $("#defenders").append(" (dead)");
                     } else {
-                        tribe.value -= getRandomInt(0, tribe.value);
+                        var dead = getRandomInt(0, tribe.value);
+                        tribe.value -= dead;
                         $("#tribe").text(tribe.value);
                         toggleFight();
+                        $("#attackers").append(" (defeated)");
+                        $("#hint").html("You've lost the battle. " + dead + " of your tribesmen died.");
                     }
                 }
                 
             };
             
             function toggleFight() {
-                fighting = !fighting;
-                if(fighting) {
-                    $("#fight").text("Stop the fight");
+                if(tribe.value > 0) {
+                    fighting = !fighting;
+                    if(fighting) {
+                        $("#fight").text("Stop the fight");
+                    } else {
+                        $("#fight").text("Start the fight");
+                    }
                 } else {
-                    $("#fight").text("Start the fight");
+                    $("#hint").html("You can't fight if you don't have ogres in your tribe. Persuade some to join you first.");
                 }
             }
             
@@ -450,7 +509,8 @@
                     <br />
                     <table id="stats"><tr><td>Points</td><td id="points"></td></tr></table>
                     
-                    <div class="col-lg-12">
+                    <div class="col-lg-10">
+                        <p id="hint" class="triangle-border">Hi, I'm Oglong and I'll be your guide.<br /> And just so you know, I'm  destined to lead biggest ogre tribe in the world.<br /> Don't you just stand there and click on the Quest below me.</p>
                         <img class="img-responsive" src="img/ogre.png" alt="Ogre">
                         <br />
                         <center>
@@ -494,11 +554,12 @@
                                 <td><table id="weapons"></table></td>
                             </tr>
                             <tr>
-                                <td>Pillage</td>
+                                <td>Pillage:</td>
                                 <table>
                                     <tr id="pillage"></tr>
                                 </table>
                             </tr>
+                            <tr><td>(Attackers power: <span id="attackers">0</span> vs. Defenders power: <span id="defenders">0</span>)</td></tr>
 
                         </table>
                         <br />
