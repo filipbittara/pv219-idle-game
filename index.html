@@ -206,7 +206,7 @@
                 $("#settlement").empty();
                 for (var i = 0; i < settlement.length; i++) {
                     if(settlement[i].shown) {
-                        $("#settlement").append('<div class="panel panel-default"><div class="panel-heading"><h3 class="panel-title">' + settlement[i].label + '</h3></div><div class="panel-body">' + settlement[i].description + '<br /> You currently own <span id="' + settlement[i].id + 'value">' + settlement[i].value + '</span>.<br /><br /><button class="btn btn-small btn-outline" id="quest" onclick="addSettlement(\'' + settlement[i].id + '\');"> +1</button></div></div>');
+                        $("#settlement").append('<div class="panel panel-default"><div class="panel-heading"><h3 class="panel-title">' + settlement[i].label + '</h3></div><div class="panel-body">' + settlement[i].description + '<br /> You currently own <span id="' + settlement[i].id + 'value">' + settlement[i].value + '</span>.<br /><br /><button class="btn btn-small btn-outline" id="quest" onclick="addSettlement(\'' + settlement[i].id + '\');"> +1 (' + Math.round(settlement[i].price * Math.pow(settlement[i].priceRatio, settlement[i].value)) + ' munchies)</button></div></div>');
                         
                     }
                 }
@@ -228,7 +228,7 @@
                         if(totalPrice <= totalMunchies) {
                             totalMunchies -= totalPrice;
                             settlement[i].value++;
-                            $("#" + settlementId + "value").text(settlement[i].value);
+                            showSettlement();
                             $("#munchies").text(totalMunchies);
                         }
                     }
@@ -255,7 +255,9 @@
                 var munchiesModifier = 1;
                 for (var i = 0; i < stats.length; i++) {
                     if(stats[i].id == "str") {
-                        munchiesModifier = stats[i].value;
+                        if(stats[i].value > 0) {
+                            munchiesModifier = stats[i].value;
+                        }
                     } 
                 }; 
                 addMunchies(getRandomInt(0, 50 * munchiesModifier));
@@ -479,8 +481,15 @@
                                 <td>In your tribe, there's you and some others, it's <span id="tribe"></span> right now.</td>
                             </tr>
                             <tr>
-                                <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe</a></td>
+                                <td><a href="javascript:void(0);" onclick="addOgre()">Persuade another ogre to join your tribe.</a></td>
                             </tr>
+                            <tr>
+                                <td>(This will cost you 100 munchies.)</td>
+                            </tr>
+                        </table>
+                        <br />
+                        <table>
+                            <tr><td>Weapons:</td></tr>
                             <tr>
                                 <td><table id="weapons"></table></td>
                             </tr>
